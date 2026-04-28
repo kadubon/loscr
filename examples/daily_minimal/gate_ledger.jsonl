@@ -1,0 +1,1 @@
+{"claim_id":"daily-claim","claim_scope_id":"daily-scope","gate_event_id":"gate-daily-1","gate_state":"pass","incident_id":null,"integrity_hash":"sha256:2d3b5ee443ed1e610a249b35a318271fbfddd9ae63ad2cdbbe422d75f7a4325c","reason":"daily minimal gate pass","target_id":"daily-claim","target_type":"claim","timestamp":"2026-01-01T00:00:00Z"}

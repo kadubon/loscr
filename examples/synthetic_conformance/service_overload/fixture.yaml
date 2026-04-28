@@ -1,0 +1,31 @@
+fixture_id: service_overload
+description: Service queue overload blocks service-controlled credit.
+contract:
+  claim_id: claim
+  contract_epoch: epoch-1
+  claim_level: service_controlled
+  claim_form: operational
+  scope: scope
+  station_set: [dev]
+  task_strata: [work]
+  ledger_schema_ids: [edge_events, service_ledger, service_obligations, service_load_contracts]
+  service_envelopes: [validation|ci|normal]
+  freeze_rule: exclude_frozen
+  downgrade_rule: canonical
+  escalation_rule: checker_only
+  hard_constraints: [security]
+  integrity_hash: sha256:16a5b2d05fbe26c22c7fb9d2ef9ff075aea45ea1508644d7e980923014f1234d
+context:
+  telemetry:
+    coverage_by_scope:
+      scope: 1.0
+  service:
+    contract_states:
+      validation|ci|normal|edit: active
+    overloaded_queues: [validation|ci|normal|w1]
+  ledgers_present: [edge_events, gate_ledger, wip_ledger, service_ledger, service_obligations, service_load_contracts]
+expected:
+  status: downgraded
+  supported_level: controlled
+  failure_family: service
+  failure_code: service_overload_or_contract_state

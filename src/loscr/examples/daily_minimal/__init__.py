@@ -1,0 +1,1 @@
+"""Daily minimal example namespace."""

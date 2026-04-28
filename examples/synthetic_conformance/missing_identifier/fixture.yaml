@@ -1,0 +1,27 @@
+fixture_id: missing_identifier
+description: Layer 0 identifier fields are missing.
+contract:
+  claim_id: claim
+  contract_epoch: epoch-1
+  claim_level: observable
+  claim_form: operational
+  scope: scope
+  station_set: [dev]
+  task_strata: [work]
+  ledger_schema_ids: [edge_events]
+  freeze_rule: exclude_frozen
+  downgrade_rule: canonical
+  escalation_rule: checker_only
+  hard_constraints: [security]
+  integrity_hash: sha256:ab2058a046f270b5d3483c95987082654dc8e4596468493ed68541347492fac9
+context:
+  telemetry:
+    coverage_by_scope:
+      scope: 1.0
+    missing_identifier_events: ["<missing_event_id>"]
+  ledgers_present: [edge_events]
+expected:
+  status: invalid
+  supported_level: descriptive
+  failure_family: missing
+  failure_code: missing_identifier

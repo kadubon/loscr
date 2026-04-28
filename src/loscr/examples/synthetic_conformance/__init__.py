@@ -1,0 +1,1 @@
+"""Synthetic conformance example namespace."""

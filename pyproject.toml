@@ -1,0 +1,57 @@
+[project]
+name = "loscr"
+version = "0.1.0"
+description = "Reference implementation of Layered Online Service and Certified Replay Control for verified AI R&D acceleration."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+authors = [{ name = "K, Takahashi" }]
+keywords = [
+  "ai",
+  "replay",
+  "telemetry",
+  "verification",
+  "service-control",
+  "research-and-development",
+]
+dependencies = [
+  "networkx>=3.3",
+  "pydantic>=2.7",
+  "pyyaml>=6.0.1",
+  "rich>=13.7",
+  "typer>=0.12",
+]
+
+[project.urls]
+Homepage = "https://github.com/kadubon/loscr"
+Issues = "https://github.com/kadubon/loscr/issues"
+
+[project.scripts]
+loscr = "loscr.cli:app"
+
+[dependency-groups]
+dev = [
+  "hypothesis>=6.100",
+  "mypy>=1.10",
+  "pytest>=8.2",
+  "ruff>=0.5",
+  "types-PyYAML>=6.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.mypy]
+python_version = "3.12"
+warn_unused_configs = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

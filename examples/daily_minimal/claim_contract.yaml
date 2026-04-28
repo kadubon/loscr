@@ -1,0 +1,43 @@
+claim_id: daily-claim
+contract_epoch: epoch-1
+claim_level: controlled
+claim_form: operational
+scope: daily-scope
+station_set:
+  - dev
+task_strata:
+  - work
+active_calendar_horizon: 2026-01-01/2026-01-02
+minimum_task_mass: 1
+minimum_service_exposure: 1.0
+materiality_floor: null
+ledger_schema_ids:
+- edge_events
+- gate_ledger
+- wip_ledger
+baseline_ids: []
+frontier_source_ids: []
+allowed_evidence: []
+layer_activation_triggers: []
+telemetry_coverage_floor: null
+service_envelopes: []
+evaluator_state_floor: null
+uncertainty_rule: null
+bridge_requirements: []
+freeze_rule: exclude_frozen
+downgrade_rule: canonical
+escalation_rule: checker_only
+owner: loscr-example
+sealed_at: null
+evaluator_ids: []
+hard_constraints:
+  - security
+causal_design: null
+assignment_probability: null
+interference_handling: null
+exposure_mapping: null
+outcome_cap: null
+missingness_rule: null
+estimator_profile_id: null
+instrumentation_burden_charged: false
+integrity_hash: sha256:516883aed2806acc9e2cfaa3cd34b9ed667a9b912fc767c0055c45f19a1eee7c

@@ -1,0 +1,44 @@
+fixture_id: stale_evaluator
+description: Audited evaluator is stale beyond audit-age floor.
+contract:
+  claim_id: claim
+  contract_epoch: epoch-1
+  claim_level: audited
+  claim_form: operational
+  scope: scope
+  station_set: [dev]
+  task_strata: [work]
+  ledger_schema_ids: [edge_events, service_ledger, service_obligations, service_load_contracts]
+  service_envelopes: [validation|ci|normal]
+  evaluator_state_floor: audited
+  freeze_rule: exclude_frozen
+  downgrade_rule: canonical
+  escalation_rule: checker_only
+  evaluator_ids: [eval]
+  hard_constraints: [security]
+  integrity_hash: sha256:2e1e1046196488516fccb4b6a0cbc597e1e6283e8856c27105ace55255e7dc1d
+context:
+  telemetry:
+    coverage_by_scope:
+      scope: 1.0
+  ledgers_present:
+    [edge_events, gate_ledger, wip_ledger, resource_ledger, service_ledger, service_obligations, service_load_contracts, audit_ledger, delayed_label_ledger]
+  service:
+    contract_states:
+      validation|ci|normal|edit: active
+  evaluator_health:
+    - evaluator_id: eval
+      state: audited
+      known_good_pass_lcb: 0.99
+      known_bad_reject_lcb: 0.99
+      canary_integrity: true
+      shortcut_probe_failure_ucb: 0.0
+      leakage_signal: false
+      blinded_review_disagreement_ucb: 0.0
+      missingness: 0.0
+      audit_age_windows: 9
+expected:
+  status: quarantined
+  supported_level: controlled
+  failure_family: evaluator
+  failure_code: evaluator_below_floor_or_stale

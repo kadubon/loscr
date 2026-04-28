@@ -1,0 +1,58 @@
+fixture_id: baseline_contamination
+description: Production baseline is contaminated.
+contract:
+  claim_id: claim
+  contract_epoch: epoch-1
+  claim_level: production_operational
+  claim_form: operational
+  scope: scope
+  station_set: [dev]
+  task_strata: [work]
+  ledger_schema_ids:
+    [edge_events, resource_ledger, service_ledger, service_obligations, service_load_contracts, audit_ledger, delayed_label_ledger, baseline_registry, dependency_graph, checker_results]
+  service_envelopes: [validation|ci|normal]
+  baseline_ids: [base]
+  evaluator_state_floor: audited
+  freeze_rule: exclude_frozen
+  downgrade_rule: canonical
+  escalation_rule: checker_only
+  evaluator_ids: [eval]
+  hard_constraints: [security]
+  integrity_hash: sha256:b08ff4f456b464825af755a4d3e0e72e3c9c2b362d1e9b612bd4739878d8c029
+context:
+  telemetry:
+    coverage_by_scope:
+      scope: 1.0
+  ledgers_present:
+    [edge_events, gate_ledger, wip_ledger, resource_ledger, service_ledger, service_obligations, service_load_contracts, evaluator_health, delayed_label_ledger, baseline_registry, dependency_graphs, checker_results]
+  service:
+    contract_states:
+      validation|ci|normal|edit: active
+  dependency:
+    unknown_dependency_fraction_by_claim:
+      claim: 0.0
+  evaluator_health:
+    - evaluator_id: eval
+      state: audited
+      known_good_pass_lcb: 0.99
+      known_bad_reject_lcb: 0.99
+      canary_integrity: true
+      shortcut_probe_failure_ucb: 0.0
+      leakage_signal: false
+      blinded_review_disagreement_ucb: 0.0
+      missingness: 0.0
+      audit_age_windows: 0
+  baseline_registry:
+    - baseline_id: base
+      baseline_type: shadow
+      policy_identity: baseline-policy
+      substrate_fingerprint: substrate-1
+      contamination_test: true
+      bridge_status: none
+      contaminated: true
+      baseline_debt: 0.0
+expected:
+  status: downgraded
+  supported_level: audited
+  failure_family: baseline
+  failure_code: baseline_contamination_or_debt
