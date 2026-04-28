@@ -1,0 +1,29 @@
+name: loscr
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  loscr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Sync
+        run: uv sync --all-extras --dev
+      - name: Ruff
+        run: uv run ruff check .
+      - name: Mypy
+        run: uv run mypy src
+      - name: Pytest
+        run: uv run pytest
+      - name: Initialize LOSCR store
+        run: uv run loscr init
+      - name: Doctor
+        run: uv run loscr doctor
+      - name: Synthetic conformance
+        run: uv run loscr conformance run examples/synthetic_conformance
+      - name: Public audit
+        run: uv run loscr audit-public

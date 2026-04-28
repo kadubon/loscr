@@ -15,6 +15,9 @@ def test_cli_smoke(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-de
     assert result.exit_code == 0
 
     monkeypatch.chdir(tmp_path)
+    result = runner.invoke(app, ["doctor"])
+    assert result.exit_code == 0
+    assert Path(".loscr/profiles/canonical_profiles.json").exists()
     result = runner.invoke(app, ["init"])
     assert result.exit_code == 0
     config = yaml.safe_load(Path(".loscr/config.yaml").read_text(encoding="utf-8"))

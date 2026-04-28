@@ -43,34 +43,7 @@ def init(path: Path = typer.Argument(Path("."), help="Repository or project path
     root = path / ".loscr"
     store = JsonlLedgerStore(root)
     store.init()
-    (root / "config.yaml").write_text(
-        yaml.safe_dump(
-            {
-                "project": "LOSCR",
-                "storage": "jsonl",
-                "network_runtime_default": "disabled",
-                "organization_decisions": {
-                    "scope_and_claim_policy": "define claim scopes, owners, claim levels, and seal timing",
-                    "adapter_policy": "define source systems, field maps, identity rules, and privacy filters",
-                    "raw_content_policy": "prefer hashes; explicitly approve any raw private content retention",
-                    "service_policy": "define service channels, load contracts, reservations, and age envelopes",
-                    "evaluator_policy": "define evaluator floors, sentinel audits, canaries, and revocation triggers",
-                    "baseline_policy": "define shadow/frozen/external baselines, bridge rules, and debt ceilings",
-                    "dependency_policy": "define graph boundaries, unknown-edge budgets, and incident reachability",
-                    "estimator_policy": "define assignment logs, positivity floors, caps, missingness, and diagnostics",
-                    "frontier_policy": "define admission, quotas, weights, blinding, deduplication, and leakage screens",
-                    "library_policy": "define trusted bases, replay tiers, maintenance, lineage, and retirement",
-                    "security_policy": "define secret scanning, signing, retention, access control, and release review",
-                },
-            },
-            sort_keys=True,
-        ),
-        encoding="utf-8",
-    )
-    (root / "profiles" / "canonical_profiles.json").write_text(
-        canonical_json(canonical_profiles()) + "\n",
-        encoding="utf-8",
-    )
+    _write_default_store_files(root)
     console.print(f"Initialized LOSCR store at {root}")
 
 
@@ -239,7 +212,10 @@ def report(output_format: str = typer.Option("text", "--format", help="text or j
 def doctor() -> None:
     """Validate local store health."""
     store = JsonlLedgerStore()
+    new_store = not store.root.exists()
     store.init()
+    if new_store:
+        _write_default_store_files(store.root)
     problems: list[str] = []
     snapshot = build_snapshot(store)
     if not (store.root / "profiles" / "canonical_profiles.json").exists():
@@ -276,6 +252,37 @@ def _load_yaml_or_json(path: Path) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise typer.BadParameter("claim file must contain a mapping")
     return data
+
+
+def _write_default_store_files(root: Path) -> None:
+    (root / "config.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "project": "LOSCR",
+                "storage": "jsonl",
+                "network_runtime_default": "disabled",
+                "organization_decisions": {
+                    "scope_and_claim_policy": "define claim scopes, owners, claim levels, and seal timing",
+                    "adapter_policy": "define source systems, field maps, identity rules, and privacy filters",
+                    "raw_content_policy": "prefer hashes; explicitly approve any raw private content retention",
+                    "service_policy": "define service channels, load contracts, reservations, and age envelopes",
+                    "evaluator_policy": "define evaluator floors, sentinel audits, canaries, and revocation triggers",
+                    "baseline_policy": "define shadow/frozen/external baselines, bridge rules, and debt ceilings",
+                    "dependency_policy": "define graph boundaries, unknown-edge budgets, and incident reachability",
+                    "estimator_policy": "define assignment logs, positivity floors, caps, missingness, and diagnostics",
+                    "frontier_policy": "define admission, quotas, weights, blinding, deduplication, and leakage screens",
+                    "library_policy": "define trusted bases, replay tiers, maintenance, lineage, and retirement",
+                    "security_policy": "define secret scanning, signing, retention, access control, and release review",
+                },
+            },
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+    (root / "profiles" / "canonical_profiles.json").write_text(
+        canonical_json(canonical_profiles()) + "\n",
+        encoding="utf-8",
+    )
 
 
 def _print_markdown_result(result: CheckerResult) -> None:

@@ -19,6 +19,66 @@ Keywords: AI R&D verification, evidence ledger, deterministic replay, JSONL
 ledger, claim checker, service control, evaluator audit, baseline contamination,
 dependency graph, incident reachability, certified replay.
 
+## Why This Exists
+
+AI-generated work is not verified progress until validation, replay, evaluator
+health, baseline integrity, service capacity, dependency safety, and maintenance
+burden are charged. LOSCR makes those conditions explicit and checkable instead
+of relying on dashboards, anecdotes, or informal agent self-assessment.
+
+## Start Here
+
+```bash
+uv sync
+uv run loscr doctor
+uv run loscr conformance run examples/synthetic_conformance
+```
+
+For the bundled daily example:
+
+```bash
+uv run loscr init
+uv run loscr ingest jsonl examples/daily_minimal/edge_events.jsonl --ledger edge_events
+uv run loscr ingest jsonl examples/daily_minimal/gate_ledger.jsonl --ledger gate_ledger
+uv run loscr ingest jsonl examples/daily_minimal/wip_ledger.jsonl --ledger wip_ledger
+uv run loscr ingest jsonl examples/daily_minimal/service_ledger.jsonl --ledger service_ledger
+uv run loscr ingest jsonl examples/daily_minimal/service_obligations.jsonl --ledger service_obligations
+uv run loscr reduce
+uv run loscr check --claim examples/daily_minimal/claim_contract.yaml
+uv run loscr report
+```
+
+`loscr doctor` initializes a local `.loscr/` store when needed. Runtime defaults
+are local-only and network-free.
+
+## Choose Your Adoption Level
+
+| Level | Add | Use when |
+| --- | --- | --- |
+| 0 | Layer 0 edge ledgers | You need observable local work evidence. |
+| 1 | Gate and WIP reducers | You need controlled local operation and hard-stop visibility. |
+| 2 | Service obligations and envelopes | You need service-controlled claims and queue capacity evidence. |
+| 3 | Evaluator, baseline, dependency checks | You need audited or production-operational claims. |
+| 4 | Replay and library records | You need certified reusable artifacts. |
+| 5 | Causal, transfer, frontier, reinvestment evidence | You need strong claims with estimator, bridge, governance, or lineage evidence. |
+
+## Common Outcomes
+
+| Status | Meaning | Safe response |
+| --- | --- | --- |
+| `valid` | Current evidence supports the requested claim level. | Keep the result with its hashes and ledger prefix. |
+| `downgraded` | Evidence supports only a weaker level. | Use `supported_level`, repair evidence, or lower the claim. |
+| `invalid` | Required identifiers or schema cannot support the claim. | Fix source records or report descriptive evidence only. |
+| `quarantined` | Integrity, incident, evaluator, hard-stop, replay, or trusted-base evidence blocks positive credit. | Quarantine/narrow scope, repair evidence, and recheck. |
+
+## Documentation Map
+
+- Quick demo: [docs/quick-demo.md](docs/quick-demo.md)
+- Failure-code cookbook: [docs/failure-code-cookbook.md](docs/failure-code-cookbook.md)
+- GitHub Actions: [docs/github-actions.md](docs/github-actions.md)
+- Theory map: [docs/theory-map.md](docs/theory-map.md)
+- Operations and adoption policies: [docs/operations.md](docs/operations.md)
+
 ## What LOSCR Does
 
 - Stores local evidence as inspectable append-only JSONL ledgers under
