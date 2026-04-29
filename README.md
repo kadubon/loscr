@@ -429,6 +429,13 @@ docs/                   theory map and implementation details
 
 See `CITATION.cff`.
 
+Software release:
+
+Takahashi, K. (2026). *LOSCR: Layered Online Service and Certified Replay
+Control (v0.1.0)*. Zenodo. https://doi.org/10.5281/zenodo.19875498
+
+Associated paper:
+
 Takahashi, K. (2026). *Layered Online Service and Replay Control for Verified AI
 R and D Acceleration*. Zenodo. https://doi.org/10.5281/zenodo.19836225
 

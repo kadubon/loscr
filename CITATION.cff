@@ -2,6 +2,9 @@ cff-version: 1.2.0
 message: "If you use LOSCR, please cite the reference implementation and the associated paper."
 title: "LOSCR: Layered Online Service and Certified Replay Control"
 type: software
+version: "0.1.0"
+doi: "10.5281/zenodo.19875498"
+date-released: "2026-04-29"
 license: Apache-2.0
 repository-code: "https://github.com/kadubon/loscr"
 url: "https://github.com/kadubon/loscr"
@@ -9,12 +12,22 @@ authors:
   - family-names: Takahashi
     given-names: K.
 preferred-citation:
-  type: article
-  title: "Layered Online Service and Replay Control for Verified AI R and D Acceleration"
+  type: software
+  title: "LOSCR: Layered Online Service and Certified Replay Control"
   authors:
     - family-names: Takahashi
       given-names: K.
+  version: "0.1.0"
   year: 2026
-  doi: "10.5281/zenodo.19836225"
+  doi: "10.5281/zenodo.19875498"
   repository-code: "https://github.com/kadubon/loscr"
-  url: "https://doi.org/10.5281/zenodo.19836225"
+  url: "https://doi.org/10.5281/zenodo.19875498"
+references:
+  - type: article
+    title: "Layered Online Service and Replay Control for Verified AI R and D Acceleration"
+    authors:
+      - family-names: Takahashi
+        given-names: K.
+    year: 2026
+    doi: "10.5281/zenodo.19836225"
+    url: "https://doi.org/10.5281/zenodo.19836225"
