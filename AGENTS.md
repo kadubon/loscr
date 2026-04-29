@@ -78,6 +78,7 @@ uv run loscr doctor
 
 - `README.md`
 - `docs/quick-demo.md`
+- `docs/layer0-quickstart.md`
 - `docs/failure-code-cookbook.md`
 - `docs/theory-map.md`
 - `docs/operations.md`

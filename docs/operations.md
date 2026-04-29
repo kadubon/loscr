@@ -19,6 +19,11 @@ governance record.
    records, and lineage ledgers only when the corresponding strong claim needs
    them.
 
+For a low-friction trial, start with `examples/layer0_minimal/` or
+`uv run loscr demo quickstart`. Do not add service, evaluator, baseline, or
+library obligations until the organization is ready to make the corresponding
+stronger claim.
+
 ## Required Local Policies
 
 - Adapter policy: field maps, stable IDs, timestamp source, privacy filter, and

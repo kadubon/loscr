@@ -4,6 +4,15 @@ Layer 0 is implemented by `EdgeEventEnvelope`, `EdgeEventSidecar`, the JSONL
 `edge_events` ledger, `telemetry_reducer`, and the lightweight `gate_reducer`
 and `wip_reducer` used by the daily profile.
 
+Layer activation follows the paper's conservative ladder. Ordinary work can
+start with Layer 0. Layer 1 evidence becomes material when service queues have
+positive age, a claim is production-level or stronger, an output is reused by
+downstream items, an action is external-facing, evaluator/safety/replay/
+maintenance/registry dependencies are present, a baseline/frontier/ledger claim
+is made, or Layer 0 missingness exceeds tolerance. Layer 2 is activated only
+when an artifact is claimed as certified reusable capital or supports certified
+library or reinvestment claims.
+
 Layer 1 is implemented by service channels, service obligations,
 `ServiceLedgerEvent`, `ServiceLoadContract`, `service_reducer`,
 `resource_reducer`, `delayed_label_reducer`, `pressure_reducer`, and the

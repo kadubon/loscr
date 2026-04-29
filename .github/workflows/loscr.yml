@@ -19,6 +19,8 @@ jobs:
         run: uv run mypy src
       - name: Pytest
         run: uv run pytest
+      - name: Quickstart demo
+        run: uv run loscr demo quickstart --format json
       - name: Initialize LOSCR store
         run: uv run loscr init
       - name: Doctor

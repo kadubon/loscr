@@ -1,0 +1,40 @@
+claim_id: layer0-observable-claim
+contract_epoch: epoch-1
+claim_level: observable
+claim_form: operational
+scope: layer0-scope
+station_set:
+- agent
+task_strata:
+- local-work
+active_calendar_horizon: 2026-01-01/2026-01-02
+minimum_task_mass: 1
+minimum_service_exposure: null
+materiality_floor: null
+ledger_schema_ids:
+- edge_events
+baseline_ids: []
+frontier_source_ids: []
+allowed_evidence: []
+layer_activation_triggers: []
+telemetry_coverage_floor: null
+service_envelopes: []
+evaluator_state_floor: null
+uncertainty_rule: null
+bridge_requirements: []
+freeze_rule: exclude_frozen
+downgrade_rule: canonical
+escalation_rule: checker_only
+owner: loscr-example
+sealed_at: null
+evaluator_ids: []
+hard_constraints: []
+causal_design: null
+assignment_probability: null
+interference_handling: null
+exposure_mapping: null
+outcome_cap: null
+missingness_rule: null
+estimator_profile_id: null
+instrumentation_burden_charged: false
+integrity_hash: sha256:43612c9c1dbe3a6e7d52cfb04dffc603af7b8e10c35c99fbed1cb4bcc296c5ab

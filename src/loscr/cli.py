@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -31,9 +32,11 @@ app = typer.Typer(no_args_is_help=True, help="LOSCR local-first reference implem
 schema_app = typer.Typer(help="JSON Schema commands.")
 ingest_app = typer.Typer(help="Ingest local records.")
 conformance_app = typer.Typer(help="Run machine-readable conformance fixtures.")
+demo_app = typer.Typer(help="Run safe local demonstrations.")
 app.add_typer(schema_app, name="schema")
 app.add_typer(ingest_app, name="ingest")
 app.add_typer(conformance_app, name="conformance")
+app.add_typer(demo_app, name="demo")
 console = Console()
 
 
@@ -112,6 +115,30 @@ def conformance_run(
     console.print_json(canonical_json(results))
     if any(not item["passed"] for item in results):
         raise typer.Exit(code=1)
+
+
+@demo_app.command("quickstart")
+def demo_quickstart(
+    output_format: str = typer.Option("text", "--format", help="text or json."),
+) -> None:
+    """Run a safe local demo using only synthetic temporary records."""
+    results = _run_quickstart_demo()
+    if output_format == "json":
+        console.print_json(canonical_json({"cases": results}))
+        return
+    if output_format != "text":
+        raise typer.BadParameter("--format must be text or json")
+    console.print("[bold]LOSCR quickstart demo[/bold]")
+    console.print("Synthetic temporary ledgers only; no network and no private traces.")
+    for item in results:
+        failure_codes = item["failure_codes"]
+        console.print(
+            f"- {item['case']}: status={item['status']} "
+            f"requested={item['requested_level']} supported={item['supported_level']}"
+        )
+        if isinstance(failure_codes, list) and failure_codes:
+            console.print(f"  failure_codes={', '.join(str(code) for code in failure_codes)}")
+    console.print("Use `uv run loscr demo quickstart --format json` for agent-readable output.")
 
 
 @app.command()
@@ -283,6 +310,110 @@ def _write_default_store_files(root: Path) -> None:
         canonical_json(canonical_profiles()) + "\n",
         encoding="utf-8",
     )
+
+
+def _run_quickstart_demo() -> list[dict[str, object]]:
+    return [
+        _run_demo_case(
+            case="layer0_observable_valid",
+            requested_level="observable",
+            corrupt_edge=False,
+        ),
+        _run_demo_case(
+            case="unsupported_controlled_downgraded",
+            requested_level="controlled",
+            corrupt_edge=False,
+        ),
+        _run_demo_case(
+            case="corrupted_layer0_quarantined",
+            requested_level="observable",
+            corrupt_edge=True,
+        ),
+    ]
+
+
+def _run_demo_case(case: str, requested_level: str, corrupt_edge: bool) -> dict[str, object]:
+    scope = f"{case}-scope"
+    with tempfile.TemporaryDirectory(prefix="loscr-demo-") as directory:
+        store = JsonlLedgerStore(Path(directory) / ".loscr")
+        store.init()
+        _write_default_store_files(store.root)
+        store.append("edge_events", _demo_edge_event(scope=scope, corrupt=corrupt_edge))
+        snapshot = build_snapshot(store)
+        context = context_from_store(store, snapshot)
+        contract = _demo_claim_contract(case=case, scope=scope, requested_level=requested_level)
+        result = check(contract, context, CheckerRegistries())
+        return {
+            "case": case,
+            "status": result.status.value,
+            "requested_level": result.requested_level.value,
+            "supported_level": result.supported_level.value,
+            "failure_codes": [
+                f"{failure_code.family.value}.{failure_code.code}"
+                for failure_code in result.failure_codes
+            ],
+            "required_actions": result.required_actions,
+            "state_hash": result.state_hash,
+            "checker_version_hash": result.checker_version_hash,
+        }
+
+
+def _demo_edge_event(scope: str, corrupt: bool) -> dict[str, object]:
+    sealed = seal_record(
+        "EdgeEventEnvelope",
+        {
+            "event_id": f"evt-{scope}",
+            "event_type": "work",
+            "timestamp": "2026-01-01T00:00:00Z",
+            "item_id": f"item-{scope}",
+            "parent_event_id": None,
+            "station_id": "demo-station",
+            "policy_id": "demo-policy",
+            "action_type": "edit",
+            "substrate_fingerprint": "demo-substrate",
+            "status_raw": "completed",
+            "resource_raw": {
+                "wall_time": 2.0,
+                "compute_seconds": 1.0,
+                "token_count": 128,
+                "tool_call_count": 1,
+            },
+            "queue_channel": "demo",
+            "queue_age_raw": 0.0,
+            "dependency_flag": False,
+            "reuse_count": 0,
+            "input_hash": "sha256:demo-input",
+            "output_hash": "sha256:demo-output",
+            "claim_scope_id": scope,
+        },
+    )
+    payload = sealed.model_dump(mode="json")
+    if corrupt:
+        payload["output_hash"] = "sha256:tampered-after-seal"
+    return payload
+
+
+def _demo_claim_contract(case: str, scope: str, requested_level: str) -> ClaimContract:
+    sealed = seal_record(
+        "ClaimContract",
+        {
+            "claim_id": f"claim-{case}",
+            "contract_epoch": "demo-epoch-1",
+            "claim_level": requested_level,
+            "claim_form": "operational",
+            "scope": scope,
+            "station_set": ["demo-station"],
+            "task_strata": ["demo"],
+            "active_calendar_horizon": "2026-01-01/2026-01-02",
+            "minimum_task_mass": 1,
+            "ledger_schema_ids": ["edge_events"],
+            "freeze_rule": "exclude_frozen",
+            "downgrade_rule": "canonical",
+            "escalation_rule": "checker_only",
+            "owner": "loscr-demo",
+        },
+    )
+    return ClaimContract.model_validate(sealed.model_dump(mode="json"))
 
 
 def _print_markdown_result(result: CheckerResult) -> None:

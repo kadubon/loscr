@@ -27,6 +27,8 @@ jobs:
         run: uv run mypy src
       - name: Pytest
         run: uv run pytest
+      - name: Quickstart demo
+        run: uv run loscr demo quickstart --format json
       - name: Initialize LOSCR store
         run: uv run loscr init
       - name: Doctor
@@ -34,7 +36,8 @@ jobs:
 ```
 
 `loscr doctor` expects a local store. Run `loscr init` first in fresh CI
-workspaces.
+workspaces. The quickstart demo uses temporary synthetic records only, so it
+does not upload or inspect private ledgers.
 
 ## Conformance Workflow
 

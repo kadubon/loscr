@@ -9,6 +9,8 @@ maintenance burden are represented by evidence.
 
 ## What You Will See
 
+- `loscr demo quickstart` shows valid, downgraded, and quarantined outcomes
+  using temporary synthetic records.
 - `loscr reduce` prints a deterministic `state_hash`.
 - `loscr check` prints a `CheckerResult` with status, supported level, hashes,
   and failure codes.
@@ -16,6 +18,36 @@ maintenance burden are represented by evidence.
 - `loscr replay` rebuilds state and verifies the state hash matches.
 - `loscr doctor` checks local store health.
 - Synthetic conformance fixtures show downgrade, invalid, and quarantine paths.
+
+## One-Command Local Demo
+
+Run:
+
+```bash
+uv sync
+uv run loscr demo quickstart
+uv run loscr demo quickstart --format json
+```
+
+The command uses only synthetic temporary ledgers. It does not read private
+project data, does not create a repository `.loscr/` store, and does not make
+network calls.
+
+## Layer 0 Minimal Example
+
+Run from the repository root:
+
+```bash
+uv run loscr init
+uv run loscr ingest jsonl examples/layer0_minimal/edge_events.jsonl --ledger edge_events
+uv run loscr reduce
+uv run loscr check --claim examples/layer0_minimal/claim_contract.yaml --append-result
+uv run loscr reduce
+uv run loscr report
+```
+
+The Layer 0 example supports an `observable` claim only. See
+[layer0-quickstart.md](layer0-quickstart.md) for the smallest adoption path.
 
 ## Minimal Daily Example
 
@@ -30,7 +62,8 @@ uv run loscr ingest jsonl examples/daily_minimal/wip_ledger.jsonl --ledger wip_l
 uv run loscr ingest jsonl examples/daily_minimal/service_ledger.jsonl --ledger service_ledger
 uv run loscr ingest jsonl examples/daily_minimal/service_obligations.jsonl --ledger service_obligations
 uv run loscr reduce
-uv run loscr check --claim examples/daily_minimal/claim_contract.yaml
+uv run loscr check --claim examples/daily_minimal/claim_contract.yaml --append-result
+uv run loscr reduce
 uv run loscr replay
 uv run loscr report
 uv run loscr doctor
@@ -38,6 +71,9 @@ uv run loscr doctor
 
 The daily example is intentionally small. It supports a controlled local claim,
 not a production, causal, frontier, or reinvestment claim.
+
+When `--append-result` is used, run `loscr reduce` again before `replay` or
+`doctor`; the checker result is itself a new append-only ledger record.
 
 ## Synthetic Conformance
 

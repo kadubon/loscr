@@ -8,11 +8,21 @@ license = "Apache-2.0"
 authors = [{ name = "K, Takahashi" }]
 keywords = [
   "ai",
+  "ai-agents",
+  "ai-evaluation",
+  "append-only-log",
+  "audit-trail",
+  "claim-checker",
+  "deterministic-replay",
+  "evidence-ledger",
+  "jsonl",
+  "local-first",
+  "machine-checkable-evidence",
   "replay",
+  "research-and-development",
+  "service-control",
   "telemetry",
   "verification",
-  "service-control",
-  "research-and-development",
 ]
 dependencies = [
   "networkx>=3.3",
@@ -25,6 +35,7 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/kadubon/loscr"
 Issues = "https://github.com/kadubon/loscr/issues"
+Documentation = "https://github.com/kadubon/loscr/tree/main/docs"
 
 [project.scripts]
 loscr = "loscr.cli:app"

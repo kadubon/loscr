@@ -15,9 +15,10 @@ frontier-grade, or reinvestment-positive, LOSCR checks whether the local evidenc
 actually supports that claim. Unsupported strong claims are downgraded,
 invalidated, or quarantined with machine-readable failure codes.
 
-Keywords: AI R&D verification, evidence ledger, deterministic replay, JSONL
-ledger, claim checker, service control, evaluator audit, baseline contamination,
-dependency graph, incident reachability, certified replay.
+Keywords: AI R&D verification, AI agent evidence, local-first evidence ledger,
+machine-checkable claims, deterministic replay, JSONL ledger, claim checker,
+service control, evaluator audit, baseline contamination, dependency graph,
+incident reachability, certified replay.
 
 ## Why This Exists
 
@@ -30,11 +31,23 @@ of relying on dashboards, anecdotes, or informal agent self-assessment.
 
 ```bash
 uv sync
+uv run loscr demo quickstart
 uv run loscr doctor
 uv run loscr conformance run examples/synthetic_conformance
 ```
 
-For the bundled daily example:
+For the smallest Layer 0 observable example:
+
+```bash
+uv run loscr init
+uv run loscr ingest jsonl examples/layer0_minimal/edge_events.jsonl --ledger edge_events
+uv run loscr reduce
+uv run loscr check --claim examples/layer0_minimal/claim_contract.yaml --append-result
+uv run loscr reduce
+uv run loscr report
+```
+
+For the bundled controlled daily example:
 
 ```bash
 uv run loscr init
@@ -44,7 +57,8 @@ uv run loscr ingest jsonl examples/daily_minimal/wip_ledger.jsonl --ledger wip_l
 uv run loscr ingest jsonl examples/daily_minimal/service_ledger.jsonl --ledger service_ledger
 uv run loscr ingest jsonl examples/daily_minimal/service_obligations.jsonl --ledger service_obligations
 uv run loscr reduce
-uv run loscr check --claim examples/daily_minimal/claim_contract.yaml
+uv run loscr check --claim examples/daily_minimal/claim_contract.yaml --append-result
+uv run loscr reduce
 uv run loscr report
 ```
 
@@ -74,10 +88,12 @@ are local-only and network-free.
 ## Documentation Map
 
 - Quick demo: [docs/quick-demo.md](docs/quick-demo.md)
+- Layer 0 quickstart: [docs/layer0-quickstart.md](docs/layer0-quickstart.md)
 - Failure-code cookbook: [docs/failure-code-cookbook.md](docs/failure-code-cookbook.md)
 - GitHub Actions: [docs/github-actions.md](docs/github-actions.md)
 - Theory map: [docs/theory-map.md](docs/theory-map.md)
 - Operations and adoption policies: [docs/operations.md](docs/operations.md)
+- Repository metadata: [docs/repository-metadata.md](docs/repository-metadata.md)
 
 ## What LOSCR Does
 
@@ -117,6 +133,7 @@ LOSCR uses Python 3.12+ and `uv`.
 ```bash
 uv sync
 uv run loscr --help
+uv run loscr demo quickstart
 ```
 
 Run the minimal local example:
@@ -129,7 +146,8 @@ uv run loscr ingest jsonl examples/daily_minimal/wip_ledger.jsonl --ledger wip_l
 uv run loscr ingest jsonl examples/daily_minimal/service_ledger.jsonl --ledger service_ledger
 uv run loscr ingest jsonl examples/daily_minimal/service_obligations.jsonl --ledger service_obligations
 uv run loscr reduce
-uv run loscr check --claim examples/daily_minimal/claim_contract.yaml
+uv run loscr check --claim examples/daily_minimal/claim_contract.yaml --append-result
+uv run loscr reduce
 uv run loscr report
 ```
 
