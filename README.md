@@ -1,24 +1,15 @@
 # LOSCR
 
-Layered Online Service and Certified Replay Control.
+Which level of claim is supported by recorded workflow evidence? **Layered Online
+Service and Certified Replay Control (LOSCR)** checks AI-assisted R&D claims against
+declared profiles and local append-only ledgers. Missing or conflicting evidence can
+downgrade, invalidate or quarantine a claim rather than silently support a stronger one.
 
-LOSCR is a local-first Python reference implementation for converting
-AI-assisted R&D work into replayable, machine-checkable claim evidence. It gives
-engineers and coding agents a small set of deterministic building blocks:
-append-only JSONL ledgers, canonical JSON hashing, pure reducers, service
-accounting, replay/library records, dependency incident reachability, and a
-conservative claim checker.
-
-The practical use case is simple: before a team says that an AI R&D workflow is
-observable, controlled, audited, production-ready, causal, transferable,
-frontier-grade, or reinvestment-positive, LOSCR checks whether the local evidence
-actually supports that claim. Unsupported strong claims are downgraded,
-invalidated, or quarantined with machine-readable failure codes.
-
-Keywords: AI R&D verification, AI agent evidence, local-first evidence ledger,
-machine-checkable claims, deterministic replay, JSONL ledger, claim checker,
-service control, evaluator audit, baseline contamination, dependency graph,
-incident reachability, certified replay.
+Current source and [GitHub release](https://github.com/kadubon/loscr/releases/tag/v0.1.0):
+**0.1.0**, Python 3.12+, Apache-2.0. The orientation below uses a source checkout;
+no LOSCR PyPI publication is asserted. Profile acceptance is not independent proof
+of production causality or deployment readiness. Suitable external statistical and
+causal designs remain necessary.
 
 ## Why This Exists
 
@@ -29,41 +20,32 @@ of relying on dashboards, anecdotes, or informal agent self-assessment.
 
 ## Start Here
 
-```bash
+Use one disposable source checkout. From its root, prepare the environment (POSIX
+shell or PowerShell); `uv sync` may access the network:
+
+```sh
 uv sync
-uv run loscr demo quickstart
-uv run loscr doctor
-uv run loscr conformance run examples/synthetic_conformance
+uv run loscr --help
 ```
 
-For the smallest Layer 0 observable example:
+After setup, the optional smallest demo writes temporary synthetic ledgers, removes
+them afterward, and prints claim outcomes. It does not create a project `.loscr/`
+store or access a model/network:
 
-```bash
-uv run loscr init
-uv run loscr ingest jsonl examples/layer0_minimal/edge_events.jsonl --ledger edge_events
-uv run loscr reduce
-uv run loscr check --claim examples/layer0_minimal/claim_contract.yaml --append-result
-uv run loscr reduce
-uv run loscr report
+```sh
+uv run loscr demo quickstart --format json
 ```
 
-For the bundled controlled daily example:
+Inspect `status`, `supported_level` and `failure_codes`; the scenarios illustrate
+valid, downgraded and quarantined claims under fixed profiles, not real-world judgments.
+Commands here are source-checked, not newly execution-verified.
 
-```bash
-uv run loscr init
-uv run loscr ingest jsonl examples/daily_minimal/edge_events.jsonl --ledger edge_events
-uv run loscr ingest jsonl examples/daily_minimal/gate_ledger.jsonl --ledger gate_ledger
-uv run loscr ingest jsonl examples/daily_minimal/wip_ledger.jsonl --ledger wip_ledger
-uv run loscr ingest jsonl examples/daily_minimal/service_ledger.jsonl --ledger service_ledger
-uv run loscr ingest jsonl examples/daily_minimal/service_obligations.jsonl --ledger service_obligations
-uv run loscr reduce
-uv run loscr check --claim examples/daily_minimal/claim_contract.yaml --append-result
-uv run loscr reduce
-uv run loscr report
-```
-
-`loscr doctor` initializes a local `.loscr/` store when needed. Runtime defaults
-are local-only and network-free.
+For persistent state, **both `init` and `doctor` can initialize `.loscr/`**.
+Use a fresh disposable checkout/directory before following the
+[Layer 0 ledger path](docs/layer0-quickstart.md) or
+[controlled daily example](examples/daily_minimal/README.md).
+Ingestion appends records; reduction writes snapshots; `check --append-result`
+adds checker evidence. Do not mistake those paths for read-only inspection.
 
 ## Choose Your Adoption Level
 
@@ -77,6 +59,9 @@ are local-only and network-free.
 | 5 | Causal, transfer, frontier, reinvestment evidence | You need strong claims with estimator, bridge, governance, or lineage evidence. |
 
 ## Common Outcomes
+
+These statuses are relative to the declared claim/profile, ledger prefix and trusted
+registries. They are not unconditional judgments of external truth or action safety.
 
 | Status | Meaning | Safe response |
 | --- | --- | --- |
@@ -128,83 +113,19 @@ records and consumed by the fail-closed checker.
 
 ## Install And Quickstart
 
-LOSCR uses Python 3.12+ and `uv`.
-
-```bash
-uv sync
-uv run loscr --help
-uv run loscr demo quickstart
-```
-
-Run the minimal local example:
-
-```bash
-uv run loscr init
-uv run loscr ingest jsonl examples/daily_minimal/edge_events.jsonl --ledger edge_events
-uv run loscr ingest jsonl examples/daily_minimal/gate_ledger.jsonl --ledger gate_ledger
-uv run loscr ingest jsonl examples/daily_minimal/wip_ledger.jsonl --ledger wip_ledger
-uv run loscr ingest jsonl examples/daily_minimal/service_ledger.jsonl --ledger service_ledger
-uv run loscr ingest jsonl examples/daily_minimal/service_obligations.jsonl --ledger service_obligations
-uv run loscr reduce
-uv run loscr check --claim examples/daily_minimal/claim_contract.yaml --append-result
-uv run loscr reduce
-uv run loscr report
-```
-
-Seal a YAML or JSON record before ingestion or sharing:
-
-```bash
-uv run loscr seal examples/daily_minimal/claim_contract.yaml --model ClaimContract --out claim.sealed.json
-```
-
-Export machine-readable schemas:
-
-```bash
-uv run loscr schema export --out schemas/
-```
+Use the single [Start Here](#start-here) path above. The [quick demo](docs/quick-demo.md)
+and [Layer 0 guide](docs/layer0-quickstart.md) explain required fixture paths and output.
+Repository-relative `examples/` files require the checkout; they are not assumed to
+appear in an arbitrary installed working directory. An unprepared `uv run` may resolve
+dependencies before running a local command.
 
 ## Organization Decisions
 
-LOSCR makes evidence checkable, but each organization must predeclare the local
-policy choices that define what the evidence means. These decisions should be
-recorded before using LOSCR for production, causal, transfer, frontier, or
-reinvestment claims. `uv run loscr init` writes a local `.loscr/config.yaml`
-template with these decision areas.
-
-- Scope and ownership: claim scopes, owners, station names, task strata,
-  supported claim levels, and when contracts must be sealed.
-- Adapter policy: source systems, field maps, stable identifiers, timestamp
-  rules, privacy filters, and the strongest claim level each adapter can
-  support.
-- Raw content policy: whether any raw prompts, diffs, traces, artifacts, or
-  reviewer notes may be stored; the default should be hashes and protected trace
-  hashes.
-- Service policy: validation, audit, replay, maintenance, and registry service
-  channels; service units; load contracts; reservation rules; queue-age
-  envelopes; overload actions; and recalibration cadence.
-- Evaluator policy: evaluator floors by claim level, sentinel pools, canary
-  budgets, known-good/known-bad sources, leakage probes, audit cadence, and
-  revocation triggers.
-- Baseline policy: frozen, rolling, shadow, or external baselines; assignment
-  rules; bridge designs; contamination tests; update cadence; and baseline-debt
-  ceilings.
-- Dependency and incident policy: graph boundaries, unknown-dependency budgets,
-  boundary certificates, hard-stop classes, incident reachability rules, and
-  closure criteria.
-- Estimator and monitoring policy: assignment logs, positivity floors, outcome
-  caps, missingness rules, interference handling, uncertainty rules, sequential
-  alpha, freeze triggers, and diagnostic pass/fail thresholds.
-- Frontier policy: source admission authority, quotas, weights, blinding,
-  deduplication, leakage screens, minimum task mass, dispute rules, and update
-  cadence.
-- Library and reinvestment policy: trusted-base governance, replay tiers,
-  signature rules, maintenance due times, promotion evidence, negative-lineage
-  audits, cohort dilution, and retirement rules.
-- Security and release policy: local secret scanning, signing or approval,
-  retention, access control, private vulnerability reporting, and release review.
-
-These policies can be stricter than LOSCR defaults. They should not weaken the
-fail-closed behavior for strong claims.
+Predeclare scope, ownership, adapters/privacy, service units, evaluator policy,
+baselines, dependencies/incidents, estimators, frontier governance, replay/library
+and security policy before relying on stronger claims. The existing
+[operations guide](docs/operations.md) retains the detailed policy inventory.
+`init` writes a `.loscr/config.yaml` template, not proof that those policies are adequate.
 
 ## Architecture
 
@@ -284,30 +205,30 @@ Examples:
 
 ## CLI Reference
 
-```bash
-uv run loscr init [PATH]
-uv run loscr seal FILE --model ModelName --out sealed.json
-uv run loscr schema export --out schemas/
-uv run loscr ingest jsonl FILE --ledger edge_events
-uv run loscr reduce
-uv run loscr check --claim claim.yaml
-uv run loscr check --claim claim.yaml --append-result
-uv run loscr check --claim claim.yaml --format markdown
-uv run loscr replay
-uv run loscr report
-uv run loscr report --format json
-uv run loscr doctor
-uv run loscr audit-public
-uv run loscr conformance run examples/synthetic_conformance
-```
+The [CLI source](src/loscr/cli.py) defines actual commands and flags. The
+[quick-demo guide](docs/quick-demo.md) explains inputs and results without duplicating
+a command catalogue here. `check` is read-only by default; `--append-result` writes
+the result ledger. `reduce` writes snapshots under `.loscr/snapshots/`, and `replay`
+also writes the rebuilt snapshot after comparison. `doctor` can initialize missing
+state. Use a fresh store for writing examples; ledgers remain the source of truth.
 
-`check` is read-only by default. Use `--append-result` when the checker result
-should become part of the `checker_results` ledger. `reduce` writes a replayable
-state snapshot under `.loscr/snapshots/`. JSONL ledgers remain the source of
-truth. `replay` rebuilds state from ledgers and checks whether the stored
-snapshot hash still matches.
+## Machine-readable interfaces
+
+- [Record models and ClaimContract](src/loscr/models.py),
+  [model registry/sealing](src/loscr/model_registry.py), and
+  [claim result](src/loscr/checker/result.py).
+- [Claim checker](src/loscr/checker/core.py) and
+  [failure-code cookbook](docs/failure-code-cookbook.md).
+- [Layer 0 claim fixture](examples/layer0_minimal/claim_contract.yaml) and
+  [negative conformance fixtures](examples/synthetic_conformance/).
+- Schema export is `uv run loscr schema export --out schemas/` from a prepared
+  checkout; it writes files, so choose a fresh destination. See [schema exporter](src/loscr/schemas/).
 
 ## Python API
+
+With LOSCR installed, the following inspection requires an existing initialized
+`.loscr/` store and an actual `claim.sealed.json` in the current directory. It reads
+those inputs and computes a result; it is not a standalone initialization example.
 
 ```python
 from pathlib import Path
@@ -328,7 +249,7 @@ print(result.status.value, result.supported_level.value)
 print([f"{code.family.value}.{code.code}" for code in result.failure_codes])
 ```
 
-To seal records programmatically:
+Partial API sketch only: supply a complete real ClaimContract before sealing; the ellipsis field below is not valid evidence:
 
 ```python
 from loscr.model_registry import seal_record
@@ -383,7 +304,7 @@ Run `uv run loscr schema export --out schemas/` and publish the generated JSON
 Schemas when building tools or agents that produce LOSCR records.
 
 Operations:
-See `docs/operations.md` for a deployment checklist and the local policy
+See [operations](docs/operations.md) for a deployment checklist and the local policy
 decisions that should be versioned before relying on strong claims.
 
 ## Operational Notes
@@ -442,3 +363,10 @@ R and D Acceleration*. Zenodo. https://doi.org/10.5281/zenodo.19836225
 ## License
 
 Apache License 2.0. SPDX-License-Identifier: Apache-2.0.
+
+## Research navigation
+
+The [Collective Intelligence Research and OSS Index](https://kadubon.github.io/github.io/collective-intelligence-index.html)
+connects [production reliability](https://kadubon.github.io/github.io/collective-intelligence-index.html#problem-production-reliability)
+and [evaluation integrity](https://kadubon.github.io/github.io/collective-intelligence-index.html#problem-evaluation-integrity)
+to the necessary evidence and external responsibilities. It does not certify a deployment.
